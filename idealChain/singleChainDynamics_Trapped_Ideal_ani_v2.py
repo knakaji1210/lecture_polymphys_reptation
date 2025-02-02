@@ -105,9 +105,9 @@ if centerConfig == "W": # 重心描画あり
 anim.controls()
 
 if initConfig == "F": # Fully Extendedからスタートする場合
-    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_{2}-Tube".format(N, t_max, radi)
+    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_D{2}-Tube".format(N, t_max, 2*radi)
 if initConfig == "R": # Random Coilからスタートする場合
-    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_{2}-Tube".format(N, t_max, radi)
+    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, t_max, 2*radi)
 anim.save_gif(savefile)
 
 plt.show()
