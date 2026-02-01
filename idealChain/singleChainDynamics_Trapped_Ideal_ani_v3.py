@@ -77,7 +77,7 @@ while not (diffLength < np.abs(xg_now - xg) or rep >= t_max-1):
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
     rep += 1
-    print("Step: {0}, Current xg: {1:.3f}, DiffLength: {2:.3f}".format(rep, np.abs(xg_now - xg), diffLength))
+    print("Step: {0}, Abs(xg(t)-xg(0)): {1:.3f}, DiffLength: {2:.3f}".format(rep, np.abs(xg_now - xg), diffLength))
 
 if rep == t_max - 1:
     print("Maximum step reached.")
