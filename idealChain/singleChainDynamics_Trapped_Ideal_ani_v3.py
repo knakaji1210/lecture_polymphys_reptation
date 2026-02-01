@@ -13,9 +13,9 @@ import animatplot as amp
 import singleChainDynamicsFunc_Trapped_Ideal_v3 as scd
 
 try:
-    N = int(input('Degree of polymerization (default=10): '))
+    N = int(input('Degree of polymerization (default=5): '))
 except ValueError:
-    N = 10
+    N = 5
 
 try:
     radi = int(input('Radius of Tube (default=2): '))
@@ -33,14 +33,14 @@ try:
     if initConfig == "":
         raise ValueError
 except ValueError:
-    initConfig = "F"
+    initConfig = "R"
 
 try:
     centerConfig = input('with center of gravity (W) or without it (O)): ')
     if centerConfig == "":
         raise ValueError
 except ValueError:
-    centerConfig = "O"
+    centerConfig = "W"
 
 if initConfig == "F": # Fully Extendedからスタートする場合
     init_coordinate_list = scd.initConfig_FullExted(N)
@@ -65,7 +65,7 @@ xg_now = 0
 
 # ステップごとのセグメントの動作
 # for rep in range(t_max-1):
-while not (diffLength < np.abs(xg_now) or rep >= t_max-1):
+while not (diffLength < np.abs(xg_now - xg) or rep >= t_max-1):
     # まず両末端を動かす
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 0)
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 1)
@@ -73,11 +73,11 @@ while not (diffLength < np.abs(xg_now) or rep >= t_max-1):
     for i in range(N-1):
         coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
     x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
-    xg_now = np.abs(np.mean(x_list))
+    xg_now = np.mean(x_list)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
     rep += 1
-    print("Step: {0}, Current xg: {1:.3f}, DiffLength: {2:.3f}".format(rep, xg_now, diffLength))
+    print("Step: {0}, Current xg: {1:.3f}, DiffLength: {2:.3f}".format(rep, np.abs(xg_now - xg), diffLength))
 
 if rep == t_max - 1:
     print("Maximum step reached.")
