@@ -95,7 +95,7 @@ cy_list_steps = np.asanyarray(cy_list_steps, dtype=object)
 
 fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}, $D$ = {1})".format(N,2*radi)
 
-result_text = "$τ$ = {}".format(rep-1)
+result_text = "$τ$ = {}".format(rep)
 
 fig = plt.figure(figsize=(8,8))
 ax = fig.add_subplot(111, title=fig_title, xlabel='$X$', ylabel='$Y$',
@@ -117,17 +117,20 @@ singleChainDynamics = amp.blocks.Line(x_list_steps, y_list_steps, ax=ax, ls='-',
 t = np.linspace(0, rep, rep+1)
 timeline = amp.Timeline(t, units=' steps', fps=5)
 
-if centerConfig == "O": # 重心描画なし
-    anim = amp.Animation([singleChainDynamics], timeline)
-if centerConfig == "W": # 重心描画あり
-    anim = amp.Animation([singleChainDynamics_c, singleChainDynamics], timeline)
-anim.controls()
+if rep <= 2:
+    print("Too few steps to animate.")
+    sys.exit()
+else:
+    if centerConfig == "O": # 重心描画なし
+        anim = amp.Animation([singleChainDynamics], timeline)
+    if centerConfig == "W": # 重心描画あり
+        anim = amp.Animation([singleChainDynamics_c, singleChainDynamics], timeline)
+    anim.controls()
 
-if initConfig == "F": # Fully Extendedからスタートする場合
-    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_D{2}-Tube".format(N, t_max, 2*radi)
-if initConfig == "R": # Random Coilからスタートする場合
-    savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, t_max, 2*radi)
-anim.save_gif(savefile)
-
-plt.show()
-plt.close()
+    if initConfig == "F": # Fully Extendedからスタートする場合
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_D{2}-Tube".format(N, rep, 2*radi)
+    if initConfig == "R": # Random Coilからスタートする場合
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, rep, 2*radi)
+    anim.save_gif(savefile)
+    plt.show()
+    plt.close()
