@@ -4,16 +4,14 @@
 # 管の中のレプテーションを記述できるように修正
 # 細い管にしても、理想だと縮んでいってしまう
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
-# SAW鎖への拡張（260202開始）
-# FE状態から、ほとんど動かないことだけを確認するための修正
-# 本当に動かない。何か間違えてないか確認する必要がある
+# SAW鎖でFE状態から、ほとんど動かないことが確認されたので、こちらでも同じことが起きていないかチェックするための修正
 
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import animatplot as amp
-import singleChainDynamicsFunc_Trapped_SAW_v3 as scd
+import singleChainDynamicsFunc_Trapped_Ideal_v3 as scd
 
 try:
     N = int(input('Degree of polymerization (default=5): '))
@@ -25,7 +23,7 @@ try:
 except ValueError:
     radi = 2
 
-t_max = 100  # 強制終了させる最大ステップ数
+t_max = 1000  # 強制終了させる最大ステップ数
 plot_lim = 1.5*N
 
 x_list_steps = []
@@ -99,7 +97,7 @@ cy_list_steps = np.asanyarray(cy_list_steps, dtype=object)
 
 fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}, $D$ = {1})".format(N,2*radi)
 
-result_text = "$τ$ = {}".format(rep-1)
+result_text = "$τ$ = {}".format(rep)
 
 fig = plt.figure(figsize=(8,8))
 ax = fig.add_subplot(111, title=fig_title, xlabel='$X$', ylabel='$Y$',
@@ -130,10 +128,11 @@ else:
     if centerConfig == "W": # 重心描画あり
         anim = amp.Animation([singleChainDynamics_c, singleChainDynamics], timeline)
     anim.controls()
+
     if initConfig == "F": # Fully Extendedからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_{1}steps_FE_in_D{2}-Tube_FE".format(N, rep, 2*radi) # 一応保存ファイル名を変更
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_D{2}-Tube_FE".format(N, rep, 2*radi)
     if initConfig == "R": # Random Coilからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, rep, 2*radi)
     anim.save_gif(savefile)
     plt.show()
     plt.close()
