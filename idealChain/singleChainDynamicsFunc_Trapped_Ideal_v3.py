@@ -47,24 +47,24 @@ def terminalSegment(coordinate_list, N, radi, p):
         y0 = coordinate_list[0][1]
         x1 = coordinate_list[1][0]  # その隣
         y1 = coordinate_list[1][1]
-        xnew = x1 + int(np.cos(np.radians(angle)))    # 末端座標の次の候補
-        ynew = y1 + int(np.sin(np.radians(angle)))
-        if np.abs(ynew) >= radi:
+        x_temp = x1 + int(np.cos(np.radians(angle)))    # 末端座標の次の候補
+        y_temp = y1 + int(np.sin(np.radians(angle)))
+        if np.abs(y_temp) >= radi:
             updated_coordinate = [x0, y0]             # 菅の外なら位置更新しない
         else:
-            updated_coordinate = [xnew, ynew]         # 菅の内側なら位置更新
+            updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
         coordinate_list[0] = updated_coordinate
     if p == 1:
         xe = coordinate_list[N][0]  # 末端座標
         ye = coordinate_list[N][1]
         xp = coordinate_list[N-1][0]  # その隣
         yp = coordinate_list[N-1][1]
-        xnew = xp + int(np.cos(np.radians(angle)))    # 末端座標の次の候補
-        ynew = yp + int(np.sin(np.radians(angle)))
-        if np.abs(ynew) >= radi:
+        x_temp = xp + int(np.cos(np.radians(angle)))    # 末端座標の次の候補
+        y_temp = yp + int(np.sin(np.radians(angle)))
+        if np.abs(y_temp) >= radi:
             updated_coordinate = [xe, ye]             # 菅の外なら位置更新しない
         else:
-            updated_coordinate = [xnew, ynew]         # 菅の内側なら位置更新
+            updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
         coordinate_list[N] = updated_coordinate
     return coordinate_list
 
@@ -90,12 +90,12 @@ def segmentMotion(coordinate_list, radi, i):
 #            print("b")
             angle = rd.choice(angle_list)
 #            print("angle = {}".format(angle))
-            xnew = xp + int(np.cos(np.radians(angle)))
-            ynew = yp + int(np.sin(np.radians(angle)))
-            if np.abs(ynew) >= radi:
+            x_temp = xp + int(np.cos(np.radians(angle)))
+            y_temp = yp + int(np.sin(np.radians(angle)))
+            if np.abs(y_temp) >= radi:
                 updated_coordinate = [xi, yi]             # 菅の外なら位置更新しない
             else:
-                updated_coordinate = [xnew, ynew]         # 菅の内側なら位置更新
+                updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
             coordinate_list[i] = updated_coordinate
         else:     # 「L」字型のとき（振る舞いによって２通りあるので分けている）
             if (xp == xi) and ((xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1)):
@@ -103,15 +103,15 @@ def segmentMotion(coordinate_list, radi, i):
                 onoff = rd.choice(onoff_list)
 #                print(onoff)
                 if onoff == "on":
-                    xnew = xn
-                    ynew = yp
+                    x_temp = xn
+                    y_temp = yp
                 if onoff == "off":
-                    xnew = xi
-                    ynew = yi
-                if np.abs(ynew) >= radi:
+                    x_temp = xi
+                    y_temp = yi
+                if np.abs(y_temp) >= radi:
                     updated_coordinate = [xi, yi]             # 菅の外なら位置更新しない
                 else:
-                    updated_coordinate = [xnew, ynew]         # 菅の内側なら位置更新
+                    updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
                 coordinate_list[i] = updated_coordinate
             else:
                 if (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
@@ -119,15 +119,15 @@ def segmentMotion(coordinate_list, radi, i):
                     onoff = rd.choice(onoff_list)
 #                    print(onoff)
                     if onoff == "on":
-                        xnew = xp
-                        ynew = yn
+                        x_temp = xp
+                        y_temp = yn
                     if onoff == "off":
-                        xnew = xi
-                        ynew = yi   
-                    if np.abs(ynew) >= radi:
+                        x_temp = xi
+                        y_temp = yi   
+                    if np.abs(y_temp) >= radi:
                         updated_coordinate = [xi, yi]          # 菅の外なら位置更新しない
                     else:
-                        updated_coordinate = [xnew, ynew]      # 菅の内側なら位置更新
+                        updated_coordinate = [x_temp, y_temp]      # 菅の内側なら位置更新
                     coordinate_list[i] = updated_coordinate
 
     return coordinate_list
