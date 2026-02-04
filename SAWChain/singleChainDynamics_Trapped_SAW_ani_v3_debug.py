@@ -17,7 +17,7 @@ import singleChainDynamicsFunc_Trapped_SAW_v3 as scd
 try:
     N = int(input('Degree of polymerization (default=5): '))
 except ValueError:
-    N = 2
+    N = 10
 
 try:
     radi = int(input('Radius of Tube (default=5): '))
@@ -31,7 +31,7 @@ try:
 except ValueError:
     t_max = 200
 
-plot_lim = 3*N
+plot_lim = 10*N
 
 x_list_steps = []
 y_list_steps = []
@@ -51,13 +51,13 @@ except ValueError:
     centerConfig = "W"
 
 if initConfig == "F": # Fully Extendedからスタートする場合
-    init_coordinate_list = scd.initConfig_FullExted(N)
-    x_list, y_list = scd.coordinateList2xyList(init_coordinate_list, N)
+    coordinate_list = scd.initConfig_FullExted(N)
+    x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
 else: #　Random Coilからスタートする場合
-    init_coordinate_list = scd.initConfig_Random(N, radi)
-    x_list, y_list = scd.coordinateList2xyList(init_coordinate_list, N)
+    coordinate_list = scd.initConfig_Random(N, radi)
+    x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
 
@@ -74,8 +74,8 @@ xg = xg0
 for rep in range(t_max-1):
 #while not (tubeLength < np.abs(xg - xg0) or rep >= t_max-1):
     # まず両末端を動かす
-    coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 0)
-    coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 1)
+    coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 0)
+    coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 1)
     # 次に末端以外のセグメントを動かす
     for i in range(N-1):
         coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
