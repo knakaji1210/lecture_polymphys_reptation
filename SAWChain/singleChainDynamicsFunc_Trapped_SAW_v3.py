@@ -135,24 +135,24 @@ def segmentMotion(coordinate_list, radi, i):
         updated_coordinate_list[i] = updated_coordinate # coordinate_listを変更しないようにするため 
     else:     # 「L」字型のとき（振る舞いによって２通りあるので分けている）
         if (xp == xi) and ((xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1)):
-#                print("c")
-                onoff = rd.choice(onoff_list)
-#                print(onoff)
-                if onoff == "on":                                # 対角線側に移動
-                    x_temp = xn
-                    y_temp = yp
-                if onoff == "off":                               # 動かない
-                    x_temp = xi
-                    y_temp = yi               
-                if np.abs(y_temp) >= radi:                       # 菅の外なら位置更新しない
-                    updated_coordinate = [xi, yi]                # [xe, ye]は元々存在できる場所なので自動的にこれで登録
+#            print("c")
+            onoff = rd.choice(onoff_list)
+#            print(onoff)
+            if onoff == "on":                                # 対角線側に移動
+                x_temp = xn
+                y_temp = yp
+            if onoff == "off":                               # 動かない
+                x_temp = xi
+                y_temp = yi               
+            if np.abs(y_temp) >= radi:                       # 菅の外なら位置更新しない
+                updated_coordinate = [xi, yi]                # [xe, ye]は元々存在できる場所なので自動的にこれで登録
+            else:
+                temp_coordinate = [x_temp, y_temp]           # 菅の内側なら位置更新
+                if temp_coordinate in coordinate_list:       # もし新座標が既に占有されていたらという条件
+                    updated_coordinate = [xi, yi]            # 座標を更新しない
                 else:
-                    temp_coordinate = [x_temp, y_temp]           # 菅の内側なら位置更新
-                    if temp_coordinate in coordinate_list:       # もし新座標が既に占有されていたらという条件
-                        updated_coordinate = [xi, yi]            # 座標を更新しない
-                    else:
-                        updated_coordinate = temp_coordinate     # もし新座標が非占有だったらという条件
-                updated_coordinate_list[i] = updated_coordinate 
+                    updated_coordinate = temp_coordinate     # もし新座標が非占有だったらという条件
+            updated_coordinate_list[i] = updated_coordinate 
         else:
             if (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
 #                print("d")
