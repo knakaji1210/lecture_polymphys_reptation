@@ -22,7 +22,12 @@ try:
 except ValueError:
     radi = 2
 
-t_max = 1000  # 強制終了させる最大ステップ数
+# 強制終了させる最大ステップ数
+try:
+    t_max = int(input('Maximum steps for forced quit (default=1000): '))
+except ValueError:
+    t_max = 1000
+
 plot_lim = 1.5*N
 
 x_list_steps = []
@@ -54,18 +59,17 @@ else: #　Random Coilからスタートする場合
     y_list_steps.append(y_list)
 
 # 初期重心位置
-xg = np.mean(x_list)
+xg0 = np.mean(x_list)
 
-# 初期長（重心から最も遠いセグメントの位置）
-xl = np.maximum(abs(np.max(x_list)), abs(np.min(x_list)))
-diffLength = np.abs(xl - xg)
+# 初期長（x方向の鎖の広がり）
+tubeLength = (np.max(x_list) - np.min(x_list))/2
 
 rep = 0
-xg_now = 0
+xg = xg0
 
 # ステップごとのセグメントの動作
 # for rep in range(t_max-1):
-while not (diffLength < np.abs(xg_now - xg) or rep >= t_max-1):
+while not (tubeLength < np.abs(xg - xg0) or rep >= t_max-1):
     # まず両末端を動かす
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 0)
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 1)
@@ -73,12 +77,14 @@ while not (diffLength < np.abs(xg_now - xg) or rep >= t_max-1):
     for i in range(N-1):
         coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
     x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
-    xg_now = np.mean(x_list)
+    xg = np.mean(x_list)
+    diffLength = np.abs(xg - xg0)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
     rep += 1
-    print("Step: {0}, Abs(xg(t)-xg(0)): {1:.3f}, DiffLength: {2:.3f}".format(rep, np.abs(xg_now - xg), diffLength))
+    print("Step: {0}, Diffusion Distance: {1:.3f}, Tube Length: {2:.3f}".format(rep, diffLength, tubeLength))
 
+# 最大ステップ数を超えたら強制終了させる
 if rep == t_max - 1:
     print("Maximum step reached.")
     sys.exit()
@@ -93,8 +99,9 @@ cx_list, cy_list, cx_list_steps, cy_list_steps = scd.centerOfMass(x_list_steps, 
 cx_list_steps = np.asanyarray(cx_list_steps, dtype=object)
 cy_list_steps = np.asanyarray(cy_list_steps, dtype=object)
 
-fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}, $D$ = {1})".format(N,2*radi)
+fig_title = "Dynamics of a Single Polymer Chain Trapped in a Tube ($N$ = {0}, $D$ = {1})".format(N,2*radi)
 
+# うまく終了した場合には、repは菅更新時間になる
 result_text = "$τ$ = {}".format(rep)
 
 fig = plt.figure(figsize=(8,8))
@@ -104,7 +111,7 @@ ax.grid(axis='both', color="gray", lw=0.5)
 
 rect_u = patches.Rectangle(xy=(-plot_lim, radi), width=2*plot_lim, height=plot_lim - radi, fc="grey", fill=True)
 rect_d = patches.Rectangle(xy=(-plot_lim, -plot_lim), width=2*plot_lim, height=plot_lim - radi, fc="grey", fill=True)
-rect_orig = patches.Rectangle(xy=(xg-diffLength, -radi), width=2*diffLength, height=2*radi, fc="yellow", fill=True)
+rect_orig = patches.Rectangle(xy=(xg0-tubeLength, -radi), width=2*tubeLength, height=2*radi, fc="yellow", fill=True)
 ax.add_patch(rect_u)
 ax.add_patch(rect_d)
 ax.add_patch(rect_orig)
@@ -128,9 +135,9 @@ else:
     anim.controls()
 
     if initConfig == "F": # Fully Extendedからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_FE_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_T{1}_FE_in_D{2}-Tube".format(N, rep, 2*radi)
     if initConfig == "R": # Random Coilからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_T{1}_RC_in_D{2}-Tube".format(N, rep, 2*radi)
     anim.save_gif(savefile)
     plt.show()
     plt.close()
