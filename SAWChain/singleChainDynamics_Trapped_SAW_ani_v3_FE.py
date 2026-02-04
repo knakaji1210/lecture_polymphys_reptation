@@ -4,9 +4,8 @@
 # 管の中のレプテーションを記述できるように修正
 # 細い管にしても、理想だと縮んでいってしまう
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
-# SAW鎖への拡張（260202開始）
+# SAW鎖への拡張（260203一旦完了）
 # FE状態から、ほとんど動かないことだけを確認するための修正
-# 本当に動かない。何か間違えてないか確認する必要がある
 
 import sys
 import numpy as np
@@ -18,15 +17,21 @@ import singleChainDynamicsFunc_Trapped_SAW_v3 as scd
 try:
     N = int(input('Degree of polymerization (default=5): '))
 except ValueError:
-    N = 5
+    N = 2
 
 try:
-    radi = int(input('Radius of Tube (default=2): '))
+    radi = int(input('Radius of Tube (default=5): '))
 except ValueError:
-    radi = 2
+    radi = 4
 
-t_max = 100  # 強制終了させる最大ステップ数
-plot_lim = 1.5*N
+
+# 強制終了させる最大ステップ数
+try:
+    t_max = int(input('Maximum steps for forced quit (default=10000): '))
+except ValueError:
+    t_max = 200
+
+plot_lim = 3*N
 
 x_list_steps = []
 y_list_steps = []
@@ -36,7 +41,7 @@ try:
     if initConfig == "":
         raise ValueError
 except ValueError:
-    initConfig = "F"
+    initConfig = "R"
 
 try:
     centerConfig = input('with center of gravity (W) or without it (O)): ')
@@ -57,18 +62,17 @@ else: #　Random Coilからスタートする場合
     y_list_steps.append(y_list)
 
 # 初期重心位置
-xg = np.mean(x_list)
+xg0 = np.mean(x_list)
 
-# 初期長（重心から最も遠いセグメントの位置）
-xl = np.maximum(abs(np.max(x_list)), abs(np.min(x_list)))
-diffLength = np.abs(xl - xg)
+# 初期長（x方向の鎖の広がり）
+tubeLength = (np.max(x_list) - np.min(x_list))/2
 
 rep = 0
-xg_now = 0
+xg = xg0
 
 # ステップごとのセグメントの動作
-for rep in range(t_max-1):      # 以前使っていたこちらを利用
-# while not (diffLength < np.abs(xg_now - xg) or rep >= t_max-1):   # こちらが正しいv3の条件式
+for rep in range(t_max-1):
+#while not (tubeLength < np.abs(xg - xg0) or rep >= t_max-1):
     # まず両末端を動かす
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 0)
     coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 1)
@@ -76,11 +80,12 @@ for rep in range(t_max-1):      # 以前使っていたこちらを利用
     for i in range(N-1):
         coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
     x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
-    xg_now = np.mean(x_list)
+    xg = np.mean(x_list)
+    diffLength = np.abs(xg - xg0)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
     rep += 1
-    print("Step: {0}, Abs(xg(t)-xg(0)): {1:.3f}, DiffLength: {2:.3f}".format(rep, np.abs(xg_now - xg), diffLength))
+    print("Step: {0}, Diffusion Distance: {1:.3f}, Tube Length: {2:.3f}".format(rep, diffLength, tubeLength))
 
 # 以下の３行をコメントアウトして、今回の目的を遂行
 # if rep == t_max - 1:
@@ -97,8 +102,9 @@ cx_list, cy_list, cx_list_steps, cy_list_steps = scd.centerOfMass(x_list_steps, 
 cx_list_steps = np.asanyarray(cx_list_steps, dtype=object)
 cy_list_steps = np.asanyarray(cy_list_steps, dtype=object)
 
-fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}, $D$ = {1})".format(N,2*radi)
+fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}) Trapped in a Tube ($R$ = {1})".format(N,radi)
 
+# うまく終了した場合には、repは菅更新時間になる
 result_text = "$τ$ = {}".format(rep-1)
 
 fig = plt.figure(figsize=(8,8))
@@ -108,7 +114,7 @@ ax.grid(axis='both', color="gray", lw=0.5)
 
 rect_u = patches.Rectangle(xy=(-plot_lim, radi), width=2*plot_lim, height=plot_lim - radi, fc="grey", fill=True)
 rect_d = patches.Rectangle(xy=(-plot_lim, -plot_lim), width=2*plot_lim, height=plot_lim - radi, fc="grey", fill=True)
-rect_orig = patches.Rectangle(xy=(xg-diffLength, -radi), width=2*diffLength, height=2*radi, fc="yellow", fill=True)
+rect_orig = patches.Rectangle(xy=(xg0-tubeLength, -radi), width=2*tubeLength, height=2*radi, fc="yellow", fill=True)
 ax.add_patch(rect_u)
 ax.add_patch(rect_d)
 ax.add_patch(rect_orig)
@@ -131,9 +137,9 @@ else:
         anim = amp.Animation([singleChainDynamics_c, singleChainDynamics], timeline)
     anim.controls()
     if initConfig == "F": # Fully Extendedからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_{1}steps_FE_in_D{2}-Tube_FE".format(N, rep, 2*radi) # 一応保存ファイル名を変更
+        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_FE_in-Tube_R{1}_T{2}steps_debug".format(N, radi, rep)
     if initConfig == "R": # Random Coilからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_{1}steps_RC_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_SAW_N{0}_RC_in-Tube_R{1}_T{2}steps_debug".format(N, radi, rep)
     anim.save_gif(savefile)
     plt.show()
     plt.close()
