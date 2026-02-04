@@ -99,7 +99,7 @@ cx_list, cy_list, cx_list_steps, cy_list_steps = scd.centerOfMass(x_list_steps, 
 cx_list_steps = np.asanyarray(cx_list_steps, dtype=object)
 cy_list_steps = np.asanyarray(cy_list_steps, dtype=object)
 
-fig_title = "Dynamics of a Single Polymer Chain Trapped in a Tube ($N$ = {0}, $D$ = {1})".format(N,2*radi)
+fig_title = "Dynamics of a Single Polymer Chain ($N$ = {0}) Trapped in a Tube ($R$ = {1})".format(N,radi)
 
 # うまく終了した場合には、repは菅更新時間になる
 result_text = "$τ$ = {}".format(rep)
