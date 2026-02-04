@@ -135,9 +135,9 @@ else:
     anim.controls()
 
     if initConfig == "F": # Fully Extendedからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_T{1}_FE_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_FE_in-Tube_R{1}_T{2}steps".format(N, radi, rep)
     if initConfig == "R": # Random Coilからスタートする場合
-        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_T{1}_RC_in_D{2}-Tube".format(N, rep, 2*radi)
+        savefile = "./gif/SingleChain_Dynamics_Ideal_N{0}_RC_in-Tube_R{1}_T{2}steps".format(N, radi, rep)
     anim.save_gif(savefile)
     plt.show()
     plt.close()
