@@ -40,8 +40,8 @@ while repeat < 100:  # 元は100
     y_list_steps = []
 
     #　Fully Extendedからスタートする
-    init_coordinate_list = scd.initConfig_FullExted(N)
-    x_list, y_list = scd.coordinateList2xyList(init_coordinate_list, N)
+    coordinate_list = scd.initConfig_FullExted(N)
+    x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
     x_list_steps.append(x_list)
     y_list_steps.append(y_list)
 
@@ -59,8 +59,8 @@ while repeat < 100:  # 元は100
         
     while not (tubeLength < np.abs(xg - xg0) or rep >= t_max-1):
         # まず両末端を動かす
-        coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 0)
-        coordinate_list = scd.terminalSegment(init_coordinate_list, N, radi, 1)
+        coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 0)
+        coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 1)
         # 次に末端以外のセグメントを動かす
         for i in range(N-1):
             coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
