@@ -5,6 +5,8 @@
 # 細い管にしても、理想だと縮んでいってしまう
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
 # 菅更新時間の統計を取るバージョン（試み）
+# SAW鎖の拡張で生じた変更で妥当なものをこちらでも修正（260213）
+# 末端以外のセグメントを動かす順番をランダムに変更（260208）
 
 # import sys
 import numpy as np
@@ -34,7 +36,7 @@ plot_lim = 1.5*N
 repeat =0   # 繰り返し数
 rep_list = []  # ステップ数（菅更新）を保存するリスト
 
-while repeat < 100:  # 元は100
+while repeat < 500:  # 元は100
 
     x_list_steps = []
     y_list_steps = []
@@ -54,6 +56,8 @@ while repeat < 100:  # 元は100
     rep = 0     # このrepは結果的にステップ数（菅更新）をカウントするための変数になる
     xg = xg0
 
+    orderedArray = np.arange(1,N)   # 260208追加
+
     # ステップごとのセグメントの動作
     # for rep in range(t_max-1):
         
@@ -62,8 +66,10 @@ while repeat < 100:  # 元は100
         coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 0)
         coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 1)
         # 次に末端以外のセグメントを動かす
+        shuffledArray = np.random.permutation(orderedArray)   # 260208追加
         for i in range(N-1):
-            coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
+#            coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)                   # こちらが元々
+            coordinate_list = scd.segmentMotion(coordinate_list, radi, shuffledArray[i])      # 260208変更 
         x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
         xg = np.mean(x_list)
         diffLength = np.abs(xg - xg0)
@@ -83,7 +89,13 @@ len_tau = len(tau_list)
 mean_tau = np.mean(tau_list)
 std_tau = np.std(tau_list)
 
+logtau_list = [ np.log10(tau) for tau in tau_list ]
+mean_logtau = np.mean(logtau_list)
+std_logtau = np.std(logtau_list)
+
 print("N = {0}, Tube Radius = {1}, Max Steps = {2}".format(N, radi, t_max))
 print("Number of Successful Events: {0}".format(len_tau))
-print("Mean of tube renewal time τ: {0:.0f}".format(mean_tau))
-print("STD of τ: {0:.0f}".format(std_tau))
+# print("Mean of tube renewal time τ: {0:.0f}".format(mean_tau))
+# print("STD of τ: {0:.0f}".format(std_tau))
+print("Mean of tube renewal time log(τ): {0:.2f}".format(mean_logtau))
+print("STD of log(τ): {0:.2f}".format(std_logtau))

@@ -4,6 +4,7 @@
 # Rep_v2 --- 両側に出口がある状態に変更
 # Rev_v3 --- 初期配置のランダムコイル生成も管の半径の制約を考慮
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
+# SAW鎖の拡張で生じた変更で妥当なものをこちらでも修正（260213）
 
 import random as rd
 import numpy as np
@@ -69,6 +70,7 @@ def terminalSegment(coordinate_list, N, radi, p):
     return coordinate_list
 
 def segmentMotion(coordinate_list, radi, i):
+    updated_coordinate_list = coordinate_list.copy()    # coordinate_listを変更しないようにするため         
     angle_list = (0, 90, 180, 270)
     onoff_list = ("on", "off")
     xp = coordinate_list[i-1][0] # p = previous
@@ -83,7 +85,7 @@ def segmentMotion(coordinate_list, radi, i):
         xi = xi
         yi = yi
         updated_coordinate = [xi, yi]
-        coordinate_list[i] = updated_coordinate
+        updated_coordinate_list[i] = updated_coordinate # coordinate_listを変更しないようにするため 
     else:
         # oo===oの形になっているときは[xp, yp]を中心に回転できる
         if xp == xn and yp == yn:
@@ -96,7 +98,7 @@ def segmentMotion(coordinate_list, radi, i):
                 updated_coordinate = [xi, yi]             # 菅の外なら位置更新しない
             else:
                 updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
-            coordinate_list[i] = updated_coordinate
+            updated_coordinate_list[i] = updated_coordinate # coordinate_listを変更しないようにするため 
         else:     # 「L」字型のとき（振る舞いによって２通りあるので分けている）
             if (xp == xi) and ((xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1)):
 #                print("c")
@@ -105,31 +107,30 @@ def segmentMotion(coordinate_list, radi, i):
                 if onoff == "on":
                     x_temp = xn
                     y_temp = yp
-                if onoff == "off":
+                elif onoff == "off":
                     x_temp = xi
                     y_temp = yi
                 if np.abs(y_temp) >= radi:
                     updated_coordinate = [xi, yi]             # 菅の外なら位置更新しない
                 else:
                     updated_coordinate = [x_temp, y_temp]         # 菅の内側なら位置更新
-                coordinate_list[i] = updated_coordinate
-            else:
-                if (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
-#                    print("d")
-                    onoff = rd.choice(onoff_list)
-#                    print(onoff)
-                    if onoff == "on":
-                        x_temp = xp
-                        y_temp = yn
-                    if onoff == "off":
-                        x_temp = xi
-                        y_temp = yi   
-                    if np.abs(y_temp) >= radi:
-                        updated_coordinate = [xi, yi]          # 菅の外なら位置更新しない
-                    else:
-                        updated_coordinate = [x_temp, y_temp]      # 菅の内側なら位置更新
-                    coordinate_list[i] = updated_coordinate
-
+                updated_coordinate_list[i] = updated_coordinate
+            elif (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
+#                print("d")
+                onoff = rd.choice(onoff_list)
+#                print(onoff)
+                if onoff == "on":
+                    x_temp = xp
+                    y_temp = yn
+                if onoff == "off":
+                    x_temp = xi
+                    y_temp = yi   
+                if np.abs(y_temp) >= radi:
+                    updated_coordinate = [xi, yi]          # 菅の外なら位置更新しない
+                else:
+                    updated_coordinate = [x_temp, y_temp]      # 菅の内側なら位置更新
+            updated_coordinate_list[i] = updated_coordinate
+    coordinate_list = updated_coordinate_list                    # updated_coordinate_listをcoordinate_listに戻す（ここは.copy()は不要？） 
     return coordinate_list
 
 def coordinateList2xyList(coordinate_list, N):
