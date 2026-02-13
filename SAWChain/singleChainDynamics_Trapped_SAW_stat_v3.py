@@ -6,6 +6,7 @@
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
 # SAW鎖への拡張（260203一旦完了）
 # 菅更新時間の統計を取るバージョン（試み）
+# 末端以外のセグメントを動かす順番をランダムに変更（260208）
 
 # import sys
 import numpy as np
@@ -56,6 +57,8 @@ while repeat < 100:  # 元は100
     rep = 0     # このrepは結果的にステップ数（菅更新）をカウントするための変数になる
     xg = xg0
 
+    orderedArray = np.arange(1,N)   # 260208追加
+
     # ステップごとのセグメントの動作
     # for rep in range(t_max-1):
 
@@ -64,8 +67,10 @@ while repeat < 100:  # 元は100
         coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 0)
         coordinate_list = scd.terminalSegment(coordinate_list, N, radi, 1)
         # 次に末端以外のセグメントを動かす
+        shuffledArray = np.random.permutation(orderedArray)   # 260208追加
         for i in range(N-1):
-            coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)   
+#            coordinate_list = scd.segmentMotion(coordinate_list, radi, i+1)                   # こちらが元々
+            coordinate_list = scd.segmentMotion(coordinate_list, radi, shuffledArray[i])      # 260208変更  
         x_list, y_list = scd.coordinateList2xyList(coordinate_list, N)
         xg = np.mean(x_list)
         diffLength = np.abs(xg - xg0)

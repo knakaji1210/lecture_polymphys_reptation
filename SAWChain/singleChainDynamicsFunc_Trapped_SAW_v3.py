@@ -5,6 +5,7 @@
 # Rev_v3 --- 初期配置のランダムコイル生成も管の半径の制約を考慮
 # Rev_v3 --- x方向の管の長さ制限を停止、長い管の中を動くような挙動に変更
 # SAW鎖への拡張（260203一旦完了）
+# 諸々のデバッグ（260213）
 
 import random as rd
 import numpy as np
@@ -87,7 +88,7 @@ def terminalSegment(coordinate_list, N, radi, p):
             else:                                        # もし新座標が非占有だったらという条件
                 updated_coordinate = temp_coordinate
         coordinate_list[0] = updated_coordinate          # 新座標を登録
-    if p == 1:  # N=N側
+    elif p == 1:  # N=N側
         direction_list = [0, 1, 2, 3]
         xpp = coordinate_list[N-2][0]
         ypp = coordinate_list[N-2][1]
@@ -141,7 +142,7 @@ def segmentMotion(coordinate_list, radi, i):
             if onoff == "on":                                # 対角線側に移動
                 x_temp = xn
                 y_temp = yp
-            if onoff == "off":                               # 動かない
+            elif onoff == "off":                             # 動かない
                 x_temp = xi
                 y_temp = yi               
             if np.abs(y_temp) >= radi:                       # 菅の外なら位置更新しない
@@ -153,27 +154,25 @@ def segmentMotion(coordinate_list, radi, i):
                 else:
                     updated_coordinate = temp_coordinate     # もし新座標が非占有だったらという条件
             updated_coordinate_list[i] = updated_coordinate 
-        else:
-            if (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
-#                print("d")
-                onoff = rd.choice(onoff_list)
-#                print(onoff)
-                if onoff == "on":                                # 対角線側に移動
-                    x_temp = xp
-                    y_temp = yn
-                if onoff == "off":                               # 動かない
-                    x_temp = xi
-                    y_temp = yi   
-                updated_coordinate = [x_temp, y_temp]
-                if np.abs(y_temp) >= radi:                       # 菅の外なら位置更新しない
-                    updated_coordinate = [xi, yi]                # [xe, ye]は元々存在できる場所なので自動的にこれで登録
-                else:
-                    temp_coordinate = [x_temp, y_temp]           # 菅の内側なら位置更新
-                    if temp_coordinate in coordinate_list:       # もし新座標が既に占有されていたらという条件
-                        updated_coordinate = [xi, yi]            # 座標を更新しない
-                    else:                                        # もし新座標が非占有だったらという条件
-                        updated_coordinate = temp_coordinate
-                coordinate_list[i] = updated_coordinate
+        elif (xn == xi) and ((xn == xp - 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp + 1) or (xn == xp + 1 and yn == yp - 1) or (xn == xp - 1 and yn == yp - 1)):
+#            print("d")
+            onoff = rd.choice(onoff_list)
+#            print(onoff)
+            if onoff == "on":                                # 対角線側に移動
+                x_temp = xp
+                y_temp = yn
+            elif onoff == "off":                               # 動かない
+                x_temp = xi
+                y_temp = yi   
+            if np.abs(y_temp) >= radi:                       # 菅の外なら位置更新しない
+                updated_coordinate = [xi, yi]                # [xe, ye]は元々存在できる場所なので自動的にこれで登録
+            else:
+                temp_coordinate = [x_temp, y_temp]           # 菅の内側なら位置更新
+                if temp_coordinate in coordinate_list:       # もし新座標が既に占有されていたらという条件
+                    updated_coordinate = [xi, yi]            # 座標を更新しない
+                else:                                        # もし新座標が非占有だったらという条件
+                    updated_coordinate = temp_coordinate
+            updated_coordinate_list[i] = updated_coordinate  # ここがcoordinate_list[i] = updated_coordinateとなっていたのがミス
     coordinate_list = updated_coordinate_list                    # updated_coordinate_listをcoordinate_listに戻す（ここは.copy()は不要？）       
     return coordinate_list
 
