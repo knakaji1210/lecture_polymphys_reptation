@@ -17,3 +17,8 @@ SAW鎖のChain Dynamicsを実装できた
 
 ＜260203コメント＞  
 シミュレーション終了時のrep numberがそのまま菅更新時間と定義できるので、突貫工事だが繰り返しにも対応できた  （singleChainDynamics_Trapped_Ideal_stat_v3.py）  
+
+＜202013コメント＞  
+SAWのsegmentMotion(coordinate_list, radi, i)を作成している最中に  
+updated_coordinate_list = coordinate_list.copy()  
+を追加した。この修正をidealChainにも適用  
