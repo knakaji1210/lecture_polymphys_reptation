@@ -34,8 +34,8 @@ ax = fig.add_subplot(111, title='Scaling of Tube Renewal Time, $τ_{{t}}$',
             xlabel='Log($N$)', ylabel='Log($τ_{{t}}$)')
 ax.grid(visible=True, which='major', color ='#666666', linestyle='--')
 
-plt.errorbar(logDP_list, logTRT_list, yerr = logTRT_std_list, capsize=5, fmt='o', markersize=10, ecolor='black', markeredgecolor = "black", color='r')
-ax.scatter(logDP_list, logTRT_list, marker='o', s=50, c='red')
+ax.errorbar(logDP_list, logTRT_list, yerr = logTRT_std_list, capsize=5, fmt='o', markersize=6, ecolor='black', color='r')
+# ax.scatter(logDP_list, logTRT_list, marker='o', s=50, c='red')
 ax.plot(logDP_list, logTRT_fit_list,  c='blue')
 
 fig.text(0.35, 0.70, resultText)
