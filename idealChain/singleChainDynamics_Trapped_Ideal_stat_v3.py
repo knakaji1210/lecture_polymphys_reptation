@@ -25,6 +25,12 @@ try:
 except ValueError:
     radi = 3
 
+# 試行回数
+try:
+    num_trial = int(input('Number of Successful Events (default=500): '))
+except ValueError:
+    num_trial = 500
+
 # 強制終了させる最大ステップ数
 try:
     t_max = int(input('Maximum steps for forced quit (default=1000): '))
@@ -36,7 +42,7 @@ plot_lim = 1.5*N
 repeat =0   # 繰り返し数
 rep_list = []  # ステップ数（菅更新）を保存するリスト
 
-while repeat < 500:  # 元は100
+while repeat < num_trial:  # 元は100
 
     x_list_steps = []
     y_list_steps = []
@@ -94,7 +100,7 @@ mean_logtau = np.mean(logtau_list)
 std_logtau = np.std(logtau_list)
 
 print("N = {0}, Tube Radius = {1}, Max Steps = {2}".format(N, radi, t_max))
-print("Number of Successful Events: {0}".format(len_tau))
+print("Number of Successful Events: {0}/{1}".format(len_tau, num_trial))
 # print("Mean of tube renewal time τ: {0:.0f}".format(mean_tau))
 # print("STD of τ: {0:.0f}".format(std_tau))
 print("Mean of tube renewal time log(τ): {0:.2f}".format(mean_logtau))

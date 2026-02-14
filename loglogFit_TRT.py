@@ -26,15 +26,15 @@ slope = param[0]
 err_slope = np.sqrt(cov[0][0])
 logTRT_fit_list = [ loglogFit(logDP, param[0], param[1]) for logDP in logDP_list ]
 
-resultText = "$τ$  ∝ $N^{{{{{0:.3f}}}±{{{1:.3f}}}}}$".format(slope, err_slope)
+resultText = "$τ_{{t}}$  ∝ $N^{{{{{0:.3f}}}±{{{1:.3f}}}}}$".format(slope, err_slope)
 
 fig = plt.figure(figsize=(8,8))
 
-ax = fig.add_subplot(111, title='Scaling of Tube Renewal Time, $τ$', 
-            xlabel='Log($N$)', ylabel='Log($τ$)')
+ax = fig.add_subplot(111, title='Scaling of Tube Renewal Time, $τ_{{t}}$', 
+            xlabel='Log($N$)', ylabel='Log($τ_{{t}}$)')
 ax.grid(visible=True, which='major', color ='#666666', linestyle='--')
 
-plt.errorbar(logDP_list, logTRT_list, yerr = logTRT_std_list, capsize=5, fmt='o', markersize=10, ecolor='black', markeredgecolor = "black", color='w')
+plt.errorbar(logDP_list, logTRT_list, yerr = logTRT_std_list, capsize=5, fmt='o', markersize=10, ecolor='black', markeredgecolor = "black", color='r')
 ax.scatter(logDP_list, logTRT_list, marker='o', s=50, c='red')
 ax.plot(logDP_list, logTRT_fit_list,  c='blue')
 
