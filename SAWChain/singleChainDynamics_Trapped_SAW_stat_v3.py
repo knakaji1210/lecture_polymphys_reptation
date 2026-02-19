@@ -13,6 +13,7 @@ import numpy as np
 # import matplotlib.pyplot as plt
 # import matplotlib.patches as patches
 #import animatplot as amp
+import time
 import singleChainDynamicsFunc_Trapped_SAW_v3 as scd
 
 try:
@@ -43,6 +44,8 @@ repeat =0   # 繰り返し数
 rep_list = []  # ステップ数（菅更新）を保存するリスト
 
 while repeat < num_trial:  # 元は100
+
+    start_time = time.process_time()
 
     x_list_steps = []
     y_list_steps = []
@@ -87,6 +90,10 @@ while repeat < num_trial:  # 元は100
 
     rep_list.append(rep)
     repeat += 1
+
+    end_time = time.process_time()
+    elapsed_time = end_time - start_time
+    print("Repetition {0}/{1} completed in {2:.2f} seconds.".format(repeat, num_trial, elapsed_time))
 
 tau_list = [x for x in rep_list if x != 0]      # 0を除去
 tau_list = [x for x in tau_list if x != t_max - 1]    # 最大ステップ数に達したものを除去
